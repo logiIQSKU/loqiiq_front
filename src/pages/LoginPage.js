@@ -1,17 +1,27 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import logo from '../assets/logiiq-logo.png';
 
 const LoginPage = () => {
     const navigate = useNavigate();
 
-    const handleLoginClick = () => {
-        navigate('/welcome'); // 이 경로로 이동시킴
+    useEffect(() => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const token = urlParams.get('token');
+
+        if (token) {
+            localStorage.setItem('jwtToken', token);
+            navigate('/welcome');
+        }
+    }, [navigate]);
+
+    const handleLogin = (provider) => {
+        const backendBaseUrl = 'http://43.200.56.181:8080';
+        window.location.href = `${backendBaseUrl}/oauth2/authorization/${provider}`;
     };
 
     return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
-            {/* Logo */}
             <div className="mb-16">
                 <div className="flex flex-col items-center">
                     <div className="relative w-48">
@@ -21,11 +31,10 @@ const LoginPage = () => {
                 </div>
             </div>
 
-            {/* Login Options */}
             <div className="w-full max-w-md px-4">
-                {/* Google Login Button */}
+                {/* Google */}
                 <button
-                    onClick={handleLoginClick} // ✅ 여기에 추가
+                    onClick={() => handleLogin('google')}
                     className="flex items-center justify-center w-full p-3 mb-4 bg-white border border-gray-300 rounded-full hover:bg-gray-50"
                 >
                     <div className="flex items-center">
@@ -41,9 +50,9 @@ const LoginPage = () => {
                     </div>
                 </button>
 
-                {/* Naver Login Button */}
+                {/* Naver */}
                 <button
-                    onClick={handleLoginClick} // ✅ 여기에 추가
+                    onClick={() => handleLogin('naver')}
                     className="flex items-center justify-center w-full p-3 mb-4 bg-white border border-gray-300 rounded-full hover:bg-gray-50"
                 >
                     <div className="flex items-center">
@@ -54,9 +63,9 @@ const LoginPage = () => {
                     </div>
                 </button>
 
-                {/* KakaoTalk Login Button */}
+                {/* Kakao */}
                 <button
-                    onClick={handleLoginClick} // ✅ 여기에 추가
+                    onClick={() => handleLogin('kakao')}
                     className="flex items-center justify-center w-full p-3 mb-4 bg-white border border-gray-300 rounded-full hover:bg-gray-50"
                 >
                     <div className="flex items-center">
