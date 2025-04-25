@@ -45,7 +45,7 @@ const WelcomePage = () => {
                     onClick={handleLoginClick}
                     className="w-full py-3 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
                 >
-                    <span className="text-base font-medium text-gray-700">지금 LOGIN 후 서비스 이용하기</span>
+                    <span className="text-base font-medium text-gray-700">지금 서비스 이용하기</span>
                 </button>
             </div>
         </div>
