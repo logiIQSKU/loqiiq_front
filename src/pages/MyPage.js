@@ -1,16 +1,23 @@
 import React, { useState, useRef, useContext } from "react";
 import { UserContext } from "../components/UserContext";
 import profileImage from "../assets/profile.png";
+import { useNavigate, useLocation } from "react-router-dom";
+
 
 function MyPage() {
   const { user, setUser } = useContext(UserContext);
-  const [nickname, setNickname] = useState(user.nickname || "");
+  const [nickname, setNickname] = useState(user.nickname || urlName || "");
   const [profileImg, setProfileImg] = useState(user.profileImg || profileImage);
   const [tempProfileImg, setTempProfileImg] = useState(
     user.profileImg || profileImage
   ); // 임시 이미지 상태
   const [showDropdown, setShowDropdown] = useState(false);
   const fileInput = useRef(null);
+
+  const location = useLocation();
+
+  const urlParams = new URLSearchParams(location.search);
+  const urlName = urlParams.get("name");  // 백에서 보낸 name
 
   const handleChange = (e) => {
     setNickname(e.target.value);

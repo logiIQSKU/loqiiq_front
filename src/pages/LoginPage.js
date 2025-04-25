@@ -15,10 +15,13 @@ const LoginPage = () => {
         }
     }, [navigate]);
 
+    // LoginPage.js
     const handleLogin = (provider) => {
-        const backendBaseUrl = 'http://43.200.56.181:8080';
+        const backendBaseUrl = "http://43.200.56.181:8080";
         window.location.href = `${backendBaseUrl}/oauth2/authorization/${provider}`;
     };
+
+
 
     return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
@@ -32,6 +35,13 @@ const LoginPage = () => {
             </div>
 
             <div className="w-full max-w-md px-4">
+            // 버튼 바로 위에 임시 버튼 추가
+                <button
+                    onClick={() => { console.log('테스트 버튼 클릭됨'); alert('테스트'); }}
+                    className="mb-4 p-2 bg-red-500 text-white"
+                >
+                    테스트 버튼
+                </button>
                 {/* Google */}
                 <button
                     onClick={() => handleLogin('google')}

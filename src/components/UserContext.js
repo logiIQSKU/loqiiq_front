@@ -1,20 +1,35 @@
-// src/components/UserContext.js
+// ✅ src/components/UserContext.jsx
 import React, { createContext, useState, useEffect } from "react";
-import profileImage from "../assets/profile.png";
 
 export const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
-  const [user, setUser] = useState(() => {
-    // 로컬 스토리지에서 사용자 정보 가져오기
-    const savedUser = localStorage.getItem("user");
-    return savedUser ? JSON.parse(savedUser) : { nickname: "리쿠", profileImg: profileImage };
+  const [user, setUser] = useState({
+    email: "",
+    nickname: "",
+    role: "",
+    profileImg: ""
   });
 
-  // 사용자 정보가 변경될 때마다 로컬 스토리지에 저장
   useEffect(() => {
-    localStorage.setItem("user", JSON.stringify(user));
-  }, [user]);
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get("token");
+    const name = params.get("name");
+    const email = params.get("email");
+    const role = params.get("role");
+    const profileImg = params.get("profileImg");
+
+    if (token) {
+      localStorage.setItem("accessToken", token);
+    }
+
+    setUser({
+      email: email || "",
+      nickname: name || "",
+      role: role || "",
+      profileImg: profileImg || ""
+    });
+  }, []);
 
   return (
     <UserContext.Provider value={{ user, setUser }}>

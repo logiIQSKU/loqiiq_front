@@ -1,12 +1,27 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import logo from '../assets/logiiq-logo.png';
 
 const WelcomePage = () => {
     const navigate = useNavigate();
+    const location = useLocation();
+    const [userName, setUserName] = useState("*****");
+
+    useEffect(() => {
+        const params = new URLSearchParams(location.search);
+        const token = params.get('token');
+        const name = params.get('name');
+
+        if (token) {
+            localStorage.setItem("accessToken", token);
+        }
+
+        if (name) {
+            setUserName(decodeURIComponent(name));
+        }
+    }, []);
 
     const handleLoginClick = () => {
-        // 서비스 이용 페이지로 이동
         navigate('/home');
     };
 
@@ -21,7 +36,7 @@ const WelcomePage = () => {
 
                 {/* Welcome Message */}
                 <div className="flex flex-col items-center mb-12">
-                    <p className="text-xl font-bold mb-2">***** 님,</p>
+                    <p className="text-xl font-bold mb-2">{userName} 님,</p>
                     <p className="text-lg">회원가입이 완료되었습니다.</p>
                 </div>
 
