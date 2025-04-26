@@ -8,27 +8,39 @@ export const UserProvider = ({ children }) => {
     email: "",
     nickname: "",
     role: "",
-    profileImg: ""
+    profileImg: "",
+    accessToken: "",  // ✅ 토큰 상태도 관리
   });
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const token = params.get("token");
-    const name = params.get("name");
-    const email = params.get("email");
-    const role = params.get("role");
-    const profileImg = params.get("profileImg");
+    const storedToken = localStorage.getItem("accessToken");
+    if (storedToken) {
+      // JWT 디코딩하여 만료 여부 확인 (선택사항)
+      try {
+        const base64Url = storedToken.split('.')[1];
+        const base64 = base64Url.replace('-', '+').replace('_', '/');
+        const payload = JSON.parse(window.atob(base64));
+        const isExpired = Date.now() >= payload.exp * 1000;
 
-    if (token) {
-      localStorage.setItem("accessToken", token);
+        if (isExpired) {
+          localStorage.removeItem("accessToken");
+          window.location.href = '/login';
+          return;
+        }
+
+        // 토큰이 유효하면 사용자 정보 설정
+        setUser(prev => ({
+          ...prev,
+          email: payload.username || prev.email,
+          role: payload.role || prev.role,
+          accessToken: storedToken,
+          id: payload.id
+        }));
+      } catch (e) {
+        console.error("토큰 파싱 오류:", e);
+        localStorage.removeItem("accessToken");
+      }
     }
-
-    setUser({
-      email: email || "",
-      nickname: name || "",
-      role: role || "",
-      profileImg: profileImg || ""
-    });
   }, []);
 
   return (

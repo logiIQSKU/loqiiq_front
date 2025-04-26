@@ -35,13 +35,6 @@ const LoginPage = () => {
             </div>
 
             <div className="w-full max-w-md px-4">
-            // 버튼 바로 위에 임시 버튼 추가
-                <button
-                    onClick={() => { console.log('테스트 버튼 클릭됨'); alert('테스트'); }}
-                    className="mb-4 p-2 bg-red-500 text-white"
-                >
-                    테스트 버튼
-                </button>
                 {/* Google */}
                 <button
                     onClick={() => handleLogin('google')}

@@ -1,38 +1,114 @@
-import React, { useState, useRef, useContext } from "react";
+import React, { useState, useRef, useContext, useEffect } from "react";
 import { UserContext } from "../components/UserContext";
 import profileImage from "../assets/profile.png";
 import { useNavigate, useLocation } from "react-router-dom";
-
+import axios from "../api/axiosInstance";
 
 function MyPage() {
   const { user, setUser } = useContext(UserContext);
-  const [nickname, setNickname] = useState(user.nickname || urlName || "");
-  const [profileImg, setProfileImg] = useState(user.profileImg || profileImage);
-  const [tempProfileImg, setTempProfileImg] = useState(
-    user.profileImg || profileImage
-  ); // 임시 이미지 상태
-  const [showDropdown, setShowDropdown] = useState(false);
-  const fileInput = useRef(null);
-
   const location = useLocation();
-
   const urlParams = new URLSearchParams(location.search);
-  const urlName = urlParams.get("name");  // 백에서 보낸 name
+  const urlName = urlParams.get("name");
+
+  // 상태 초기화
+  const [nickname, setNickname] = useState("");
+  const [profileImg, setProfileImg] = useState(profileImage);
+  const [tempProfileImg, setTempProfileImg] = useState(profileImage);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const fileInput = useRef(null);
+  const navigate = useNavigate();
+
+  // 사용자 정보 가져오기
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const token = user.accessToken || localStorage.getItem("accessToken");
+
+      // accessToken이 없으면 로그인 페이지로 이동
+      if (!token) {
+        navigate("/login");
+        return;
+      }
+
+      try {
+        setIsLoading(true);
+        const response = await axios.get("/api/user/me", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        // API 응답에서 사용자 정보 가져오기
+        const userData = response.data;
+
+        // UserContext 업데이트
+        setUser({
+          ...user,
+          email: userData.email || user.email,
+          nickname: userData.nickname || user.nickname,
+          profileImg: userData.profileImg || user.profileImg,
+          accessToken: token
+        });
+
+        // 로컬 상태 업데이트 - URL 파라미터보다 API 정보를 우선시함
+        setNickname(userData.nickname || urlName || "");
+        setProfileImg(userData.profileImg || profileImage);
+        setTempProfileImg(userData.profileImg || profileImage);
+
+      } catch (error) {
+        console.error("사용자 정보 불러오기 실패:", error);
+
+        // 401 오류면 로그인 페이지로 이동
+        if (error.response && error.response.status === 401) {
+          localStorage.removeItem("accessToken");
+          navigate("/login");
+        } else {
+          // API 호출은 실패했지만 URL에 name이 있으면 사용
+          if (urlName) {
+            setNickname(urlName);
+          }
+        }
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchUserData();
+  }, []);
 
   const handleChange = (e) => {
     setNickname(e.target.value);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (nickname.trim()) {
-      // 수정 완료 버튼 클릭 시에만 실제 값 업데이트
-      setProfileImg(tempProfileImg);
-      setUser({
-        ...user,
-        nickname: nickname,
-        profileImg: tempProfileImg,
-      });
-      alert("수정되었습니다.");
+      try {
+        const token = user.accessToken || localStorage.getItem("accessToken");
+
+        // 사용자 정보 업데이트 API 요청
+        await axios.put("/api/user/update", {
+          nickname: nickname,
+          profileImg: tempProfileImg !== profileImage ? tempProfileImg : null,
+        }, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+
+        // 수정 완료 후 실제 값 업데이트
+        setProfileImg(tempProfileImg);
+        setUser({
+          ...user,
+          nickname: nickname,
+          profileImg: tempProfileImg,
+        });
+
+        alert("수정되었습니다.");
+      } catch (error) {
+        console.error("사용자 정보 업데이트 실패:", error);
+        alert("수정에 실패했습니다. 다시 시도해주세요.");
+      }
     } else {
       alert("닉네임을 입력해주세요.");
     }
@@ -64,6 +140,16 @@ function MyPage() {
     setTempProfileImg(profileImage);
     setShowDropdown(false);
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <p className="text-lg">사용자 정보 로딩 중...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">

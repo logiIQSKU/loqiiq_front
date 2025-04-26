@@ -20,27 +20,28 @@ import MyPage from "./pages/MyPage";
 function App() {
   return (
     <UserProvider>
-    <Router>
-      <Layout>
-        <div className="min-h-screen bg-gray-50">
-          <Routes>
-            <Route path="/" element={<LoginPage />} />
-            <Route path="/dashboard" element={<DashboardPage />} />
-            <Route path="/forklift/:testId" element={<ForkliftDetailPage />} />
-            <Route path="/sorter/:testId" element={<SorterDetailPage />} />
-            <Route path="/agv/:testId" element={<AGVDetailPage />} />
-            <Route path="/profile" element={<ProfilePage />} />
-            <Route path="/welcome" element={<WelcomePage />} />
-            <Route path="/loading" element={<LogisticsDashboard />} />
-            <Route path="/forklift" element={<ForkliftTable />} />
-            <Route path="/agv" element={<AGVTable />} />
-            <Route path="/sorter" element={<SorterTable />} />
-            <Route path="/home" element={<Home />} />
-            <Route path="/mypage" element={<MyPage />} />
-          </Routes>
-        </div>
-      </Layout>
-    </Router>
+      <Router>
+        <Layout>
+          <div className="min-h-screen bg-gray-50">
+            <Routes>
+              <Route path="/" element={<LoginPage />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/dashboard" element={<DashboardPage />} />
+              <Route path="/forklift/:testId" element={<ForkliftDetailPage />} />
+              <Route path="/sorter/:testId" element={<SorterDetailPage />} />
+              <Route path="/agv/:testId" element={<AGVDetailPage />} />
+              <Route path="/profile" element={<ProfilePage />} />
+              <Route path="/welcome" element={<WelcomePage />} />
+              <Route path="/loading" element={<LogisticsDashboard />} />
+              <Route path="/forklift" element={<ForkliftTable />} />
+              <Route path="/agv" element={<AGVTable />} />
+              <Route path="/sorter" element={<SorterTable />} />
+              <Route path="/home" element={<Home />} />
+              <Route path="/mypage" element={<MyPage />} />
+            </Routes>
+          </div>
+        </Layout>
+      </Router>
     </UserProvider>
   );
 }
